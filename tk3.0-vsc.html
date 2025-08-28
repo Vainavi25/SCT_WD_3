@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz App</title>
+  <style>
+     body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 2em;
+      background: linear-gradient(to right, #c2e59c, #64b3f4);
+      color: #333;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 1em;
+    }
+
+    .question {
+      font-weight: bold;
+      font-size: 1.5em;
+      margin-bottom: 1em;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .options {
+      list-style: none;
+      padding: 0;
+    }
+
+    .options li {
+      margin: 0.5em 0;
+    }
+
+    .options button {
+      padding: 0.7em 1.2em;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .options button:hover {
+      background-color: #555;
+    }
+
+    #feedback {
+      margin-top: 1em;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    #timer {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+      color: #ff4444;
+    }
+
+    #progress {
+      width: 100%;
+      background: #eee;
+      border-radius: 10px;
+      margin-top: 1em;
+    }
+
+    #bar {
+      height: 20px;
+      background: #4caf50;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Quiz App</h1>
+  <div id="timer">Time Left: 40s</div>
+  <div id="quiz"></div>
+  <div id="feedback"></div>
+  <div id="progress"><div id="bar"></div></div>
+  <div id="result"></div>
+
+  <script>
+    const questions = [
+      {
+        q: "What is the capital of India?",
+        options: ["London", "Berlin", "Delhi", "Madrid"],
+        answer: 2
+      },
+      {
+        q: "What is 2 + 2?",
+        options: ["3", "4", "5", "6"],
+        answer: 1
+      },
+      {
+        q: "Which planet is known as the Red Planet?",
+        options: ["Earth", "Mars", "Venus", "Saturn"],
+        answer: 1
+      },
+      {
+  q: "Which is the largest ocean on Earth?",
+  options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+  answer: 3
+      },
+      {
+  q: "Which planet is closest to the Sun?",
+  options: ["Venus", "Earth", "Mercury", "Mars"],
+  answer: 2
+      },
+      {
+  q: "What is the national animal of India?",
+  options: ["Elephant", "Tiger", "Lion", "Peacock"],
+  answer: 1
+     },
+     {
+  q: "How many continents are there on Earth?",
+  options: ["5", "6", "7", "8"],
+  answer: 2
+     }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let timeLeft = 40;
+    let timerInterval;
+
+   function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerText = `Time Left: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById("quiz").innerHTML = `
+        <div class="question">${q.q}</div>
+        <ul class="options">
+          ${q.options.map((opt, i) =>
+            `<li><button onclick="checkAnswer(${i})">${opt}</button></li>`
+          ).join('')}
+        </ul>
+      `;
+    }
+
+    function checkAnswer(selected) {
+      const correct = questions[current].answer;
+      if (selected === correct) {
+        score++;
+        document.getElementById("feedback").innerText = "✅ Correct!";
+      } else {
+        document.getElementById("feedback").innerText = "❌ Wrong!";
+      }
+
+      current++;
+      updateProgress();
+
+      setTimeout(() => {
+        if (current < questions.length) {
+          loadQuestion();
+        } else {
+          clearInterval(timerInterval);
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function updateProgress() {
+      const percent = (score / questions.length) * 100;
+      document.getElementById("bar").style.width = `${percent}%`;
+    }
+
+    function endQuiz() {
+      document.getElementById("quiz").innerHTML = "";
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("timer").innerText = "";
+      document.getElementById("result").innerHTML = `<h2>You scored ${score} out of ${questions.length}!</h2>`;
+    }
+
+    loadQuestion();
+    startTimer();
+
+  </script>
+</body>
+</html>
